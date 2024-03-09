@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app"
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged} from 'firebase/auth'
 import {createContext,useEffect,useState} from "react"
-import {getStorage,uploadBytes,ref} from 'firebase/storage'
+import {getStorage,uploadBytes,ref,getDownloadURL} from 'firebase/storage'
 import {getFirestore,addDoc,collection} from 'firebase/firestore'
+import {getDocs} from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyDOw8a_Bf5aNXo02xSBrttXHRRT6OOeax8",
@@ -37,6 +38,10 @@ const Firebase = (props)=>{
 
     const isLoggedin = user?true:false
 
+    const listAllDocs = ()=>{
+        return getDocs(collection(firestore,"books"))
+    }
+
     const signUpUser = (email,password)=>{
         createUserWithEmailAndPassword(firebaseAuth,email,password)
     }
@@ -58,8 +63,12 @@ const Firebase = (props)=>{
         }).then().catch((error)=>{console.log(error.message)})
     }
 
+    const getImageURL = (path)=>{
+        return getDownloadURL(ref(firebaseStorage,path))
+    }
+
     return (
-        <firebaseContext.Provider value={{signUpUser,signInUser,isLoggedin,createListing}}>
+        <firebaseContext.Provider value={{signUpUser,signInUser,isLoggedin,createListing,listAllDocs,getImageURL}}>
             {props.children}
         </firebaseContext.Provider>
     )

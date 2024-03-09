@@ -10,6 +10,7 @@ import MyNavbar from './components/MyNavbar'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import List from './pages/List'
+import Home from './pages/Home'
 
 function App() {
 
@@ -17,7 +18,7 @@ function App() {
     <div>
         <MyNavbar/>
         <Routes>
-            <Route path='/' element={<h1>Home page</h1>}/>
+            <Route path='/' element={<Home/>}/>
             <Route path='/login' element={<Login/>}/>
             <Route path='/register' element={<Register/>}/>
             <Route path='/book/list' element={<List/>}/>
