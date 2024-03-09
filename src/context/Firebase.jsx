@@ -48,15 +48,14 @@ const Firebase = (props)=>{
     const createListing =async (name,isbn,price,coverpic)=>{
         const imageRef = ref(firebaseStorage,`book/images/${Date.now()}-${coverpic.name}`)
         const result = await uploadBytes(imageRef,coverpic)
-        await addDoc(collection(getFirestore,'books'),{
+        await addDoc(collection(firestore,'books'),{
             name,
             ISBN:isbn,
             price,
             imageURL:result.ref.fullPath,
-            userID:user.id,
+            userID:user.uid,
             userEmail:user.email,
-            userName:user.displayName
-        })
+        }).then().catch((error)=>{console.log(error.message)})
     }
 
     return (
