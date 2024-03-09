@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app"
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged} from 'firebase/auth'
 import {createContext,useEffect,useState} from "react"
+import {getStorage,uploadBytes,ref} from 'firebase/storage'
+import {getFirestore,addDoc,collection} from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyDOw8a_Bf5aNXo02xSBrttXHRRT6OOeax8",
@@ -11,8 +13,10 @@ const firebaseConfig = {
     appId: "1:247846381707:web:ec5dd18ad954c18484cc8e"
 };
 
-export const firebaseApp = initializeApp(firebaseConfig)
-export const firebaseAuth = getAuth(firebaseApp)
+const firebaseApp = initializeApp(firebaseConfig)
+const firebaseAuth = getAuth(firebaseApp)
+const firebaseStorage = getStorage(firebaseApp)
+const firestore = getFirestore(firebaseApp)
 
 export const firebaseContext = createContext(null)
 
@@ -24,7 +28,6 @@ const Firebase = (props)=>{
         onAuthStateChanged(firebaseAuth,(user)=>{
             if(user){
                 setUser(user)
-                console.log(user)
             }
             else{
                 setUser(null)
@@ -42,8 +45,22 @@ const Firebase = (props)=>{
         signInWithEmailAndPassword(firebaseAuth,email,password).then(()=>{console.log('Login succcessful')}).catch((error)=>{console.log(error.message)})
     }
 
+    const createListing =async (name,isbn,price,coverpic)=>{
+        const imageRef = ref(firebaseStorage,`book/images/${Date.now()}-${coverpic.name}`)
+        const result = await uploadBytes(imageRef,coverpic)
+        await addDoc(collection(getFirestore,'books'),{
+            name,
+            ISBN:isbn,
+            price,
+            imageURL:result.ref.fullPath,
+            userID:user.id,
+            userEmail:user.email,
+            userName:user.displayName
+        })
+    }
+
     return (
-        <firebaseContext.Provider value={{signUpUser,signInUser,isLoggedin}}>
+        <firebaseContext.Provider value={{signUpUser,signInUser,isLoggedin,createListing}}>
             {props.children}
         </firebaseContext.Provider>
     )
