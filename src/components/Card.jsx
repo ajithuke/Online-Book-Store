@@ -1,5 +1,6 @@
 import React from "react";
-import { useEffect ,useState,useContext} from "react";
+import {useNavigate} from 'react-router-dom'
+import {useEffect ,useState,useContext} from "react";
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { firebaseContext } from "../context/Firebase";
@@ -7,10 +8,9 @@ import { firebaseContext } from "../context/Firebase";
 const BookCard =(props)=>{
 
     const context = useContext(firebaseContext)
+    const navigate = useNavigate()
 
     const [url,setUrl] = useState(null)
-
-    console.log(props.imageURL)
     
     useEffect(()=>{
         context.getImageURL(props.imageURL).then((url)=>{setUrl(url)})
@@ -26,7 +26,7 @@ const BookCard =(props)=>{
                     This book is written by Mr. Author, Price of this book is {props.price}
                     <div>ISBN Number:-{props.ISBN}</div>
                 </Card.Text>
-                <Button variant="primary">
+                <Button onClick={()=>{navigate(props.link)}} variant="primary">
                     Get Details
                 </Button>
                 </Card.Body>
